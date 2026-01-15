@@ -1,0 +1,12 @@
+# PyInstaller
+_internal/
+build/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
