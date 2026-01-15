@@ -1,4 +1,5 @@
 import os
+import sys
 import tempfile
 
 # 🔹 Configuración centralizada de archivos y rutas
@@ -12,7 +13,12 @@ DESTINATION_FOLDER_FOR_THMX = "extracted_destination_thmx"
 FOLDER_FOR_EXTRACTED_APP = "extracted_app_pptm"
 CURRENT_FILE_PATH = os.path.abspath(__file__)
 PARENT_DIR = os.path.dirname(CURRENT_FILE_PATH)
-TOOL_DIRECTORY=PARENT_DIR
+
+if getattr(sys, "frozen", False):
+    EXECUTABLE_DIR = os.path.dirname(sys.executable)
+    TOOL_DIRECTORY = os.path.dirname(EXECUTABLE_DIR)
+else:
+    TOOL_DIRECTORY = PARENT_DIR
 TEMP_DIRECTORY=tempfile.gettempdir()
 
 
