@@ -1,9 +1,16 @@
 import sys
+import os
+
+print("Executable:", sys.executable)
+print("Version:", sys.version)
+print("PATH:", os.environ.get("PATH"))
 
 try:
     import lxml
-    print("✅ La librería 'lxml' está instalada")
-    sys.exit(0)  # La librería está instalada
+    print("lxml OK")
+    input("Press Enter to exit...")
+    sys.exit(0)
 except ImportError as e:
-    print("❌ Error:", e)
-    sys.exit(1)  # La librería no está instalada
+    print("ImportError:", e)
+    input("Press Enter to exit...")
+    sys.exit(1)
