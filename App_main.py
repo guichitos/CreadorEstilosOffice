@@ -3,7 +3,7 @@ import sys
 import config
 
 # Asegurar que el script se ejecuta desde su propia carpeta
-#SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+# SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SCRIPT_DIR = config.PATH
 os.chdir(SCRIPT_DIR)
 sys.path.insert(0, SCRIPT_DIR)
@@ -20,9 +20,29 @@ from extract_pptm import extract_pptm  # 🔹 Se importa el módulo separado
 from process_styles import process_styles  # 🔹 Se importa el nuevo módulo separado
 from rename_theme_elements import rename_theme_elements
 
-# 🔹 Variables adicionales configurables
+def configure_runtime_paths(cli_param):
+    """Set working folders. If a file parameter is provided, use its folder."""
+    if not cli_param:
+        return
 
-OUTPUT_THMX_PATH = os.path.splitext(config.THMX_FILE_DESTINATION)[0]+".thmx"
+    execution_directory = os.path.dirname(os.path.abspath(cli_param))
+    if not execution_directory:
+        return
+
+    config.PATH = execution_directory
+    config.TEMP_DIRECTORY = execution_directory
+
+    os.chdir(execution_directory)
+    if execution_directory not in sys.path:
+        sys.path.insert(0, execution_directory)
+
+    log_info(f"📁 Carpeta de ejecución ajustada al directorio del parámetro: {execution_directory}")
+
+
+def get_output_thmx_path():
+    """Build output path in the active execution directory."""
+    output_name = os.path.splitext(os.path.basename(config.THMX_FILE_DESTINATION))[0] + ".thmx"
+    return os.path.join(config.PATH, output_name)
 
 
 def resolve_source_thmx_path():
@@ -31,6 +51,7 @@ def resolve_source_thmx_path():
 
     if len(sys.argv) > 1 and sys.argv[1].strip():
         param_source = os.path.abspath(sys.argv[1])
+        configure_runtime_paths(param_source)
         config.THMX_FILE_SOURCE = param_source
         log_info(f"🧭 Ejecución con parámetro: {param_source}")
 
@@ -60,8 +81,9 @@ log_info("                NEW EVENT                ")
 
 def process_files():
     try:
-        create_thmx.create_thmx_from_folder(config.DESTINATION_FOLDER_FOR_THMX, OUTPUT_THMX_PATH)
-        log_info(f"Process completed: {OUTPUT_THMX_PATH}")
+        output_thmx_path = get_output_thmx_path()
+        create_thmx.create_thmx_from_folder(config.DESTINATION_FOLDER_FOR_THMX, output_thmx_path)
+        log_info(f"Process completed: {output_thmx_path}")
     except Exception as e:
         log_error(f"Error finalizing: {e}")
 
