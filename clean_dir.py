@@ -28,7 +28,8 @@ def clean_output_files():
             except Exception as e:
                 log_writer.log_error(f"❌ Error deleting {file_name}: {e}")
         else:
-            log_writer.log_error(f"⚠️ File not found: {file_name}")
+            log_writer.log_info(f"⚠️ Auxiliary file not found (skip): {file_name}")
+
 
 
 if __name__ == "__main__":
