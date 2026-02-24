@@ -2,12 +2,12 @@ import os
 import log_writer
 import config
 
+
 def clean_output_files():
-    log_writer.log_info(f"Removing auxiliary files (clean_dir)")
+    log_writer.log_info("Removing auxiliary files (clean_dir)")
     script_directory = config.PATH
 
     files_to_delete = [
-        config.THMX_FILE_SOURCE,
         "background_extracted.txt",
         "effects_extracted.txt",
         "fill_extracted.txt",
@@ -22,14 +22,14 @@ def clean_output_files():
         if os.path.exists(file_path):
             try:
                 os.remove(file_path)
-                
                 log_writer.log_info(f"Deleted: {file_name}")
             except PermissionError:
                 log_writer.log_error(f"❌ Permission denied: {file_name}")
             except Exception as e:
                 log_writer.log_error(f"❌ Error deleting {file_name}: {e}")
         else:
-            log_writer.log_error(f"⚠️ File not found: {file_name}")
+            log_writer.log_info(f"⚠️ Auxiliary file not found (skip): {file_name}")
+
 
 if __name__ == "__main__":
     clean_output_files()

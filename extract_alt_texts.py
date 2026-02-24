@@ -1,11 +1,19 @@
 import os
 from lxml import etree
 import log_writer
+import config
 
-TEMP_DIR = os.environ.get("TEMP", "/tmp")
-SLIDE_PATH = os.path.join(TEMP_DIR, "extracted_app_pptm", "ppt", "slides", "slide1.xml")
 
-def get_palette_alt_texts(palette_number, slide_path=SLIDE_PATH):
+def get_palette_alt_texts(palette_number, slide_path=None):
+    if slide_path is None:
+        slide_path = os.path.join(
+            config.PATH,
+            config.FOLDER_FOR_EXTRACTED_APP,
+            "ppt",
+            "slides",
+            "slide1.xml"
+        )
+
     if not os.path.exists(slide_path):
         log_writer.log_error(f"Slide not found at path: {slide_path}")
         return {}
@@ -28,7 +36,7 @@ def get_palette_alt_texts(palette_number, slide_path=SLIDE_PATH):
         shape_name = f"PaletteColor{letter}{palette_number}"
         xpath_query = f'.//p:sp[p:nvSpPr/p:cNvPr[@name="{shape_name}"]]'
         shape = root.xpath(xpath_query, namespaces=ns)
-        
+
         if shape:
             cNvPr = shape[0].find(".//p:cNvPr", namespaces=ns)
             alt_text = cNvPr.get("descr", "") if cNvPr is not None else ""
@@ -40,10 +48,11 @@ def get_palette_alt_texts(palette_number, slide_path=SLIDE_PATH):
 
     return alt_texts
 
+
 if __name__ == "__main__":
     log_writer.log_info("🔍 Extracting alternative text from PaletteColor shapes...")
 
-    palette_number = 2  # Puedes cambiar este número
+    palette_number = 2
 
     try:
         alt_texts = get_palette_alt_texts(palette_number)
