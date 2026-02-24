@@ -1,7 +1,8 @@
 from lxml import etree
 from log_writer import log_info, log_error
-from config import PATH, FOLDER_FOR_EXTRACTED_APP
+import config
 import os
+
 
 def is_copy_from_theme_button_visible(button_number: int) -> bool:
     if button_number not in range(1, 5):
@@ -12,8 +13,8 @@ def is_copy_from_theme_button_visible(button_number: int) -> bool:
     shape_name = f"CopyCurrentColorPalette{button_number}"
 
     slide_path = os.path.join(
-        PATH,
-        FOLDER_FOR_EXTRACTED_APP,
+        config.PATH,
+        config.FOLDER_FOR_EXTRACTED_APP,
         "ppt",
         "slides",
         "slide1.xml"
@@ -54,7 +55,8 @@ def is_copy_from_theme_button_visible(button_number: int) -> bool:
         print(f"Button {button_number}:ERROR")
         return False
 
+
 if __name__ == "__main__":
-    print("🔍 Checking visibility of CopyCurrentColorPalette1 to CopyCurrentColorPalette4...\n")
+    print("🔍 Checking visibility of CopyCurrentColorPalette1 to CopyCurrentColorPalette4...")
     for i in range(1, 5):
         is_copy_from_theme_button_visible(i)
