@@ -1,13 +1,15 @@
 from lxml import etree
 from log_writer import log_info, log_error
-from config import PATH, FOLDER_FOR_EXTRACTED_APP
+import config
 import os
+
+
 def is_custom_color_label_visible() -> bool:
     shape_name = "CustomColorLabel"
 
     slide_path = os.path.join(
-        PATH,
-        FOLDER_FOR_EXTRACTED_APP,
+        config.PATH,
+        config.FOLDER_FOR_EXTRACTED_APP,
         "ppt",
         "slides",
         "slide1.xml"
@@ -35,6 +37,8 @@ def is_custom_color_label_visible() -> bool:
     except Exception as e:
         log_error(f"Error checking {shape_name}: {e}")
         return False
+
+
 if __name__ == "__main__":
     result = is_custom_color_label_visible()
     print("✅ CustomColorLabel is visible." if result else "❌ CustomColorLabel is hidden or not found.")
