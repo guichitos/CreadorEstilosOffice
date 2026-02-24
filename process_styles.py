@@ -16,13 +16,20 @@ from erase_custom_colors import clear_custom_colors_from_thmx
 import config
 
 FOLDER_FOR_EXTRACTED_APP = config.FOLDER_FOR_EXTRACTED_APP
-THMX_PATH = os.path.join(config.PATH, config.THMX_FILE_SOURCE)
+def resolve_thmx_path():
+    """Resolve source THMX path at runtime to honor CLI overrides in config."""
+    source = config.THMX_FILE_SOURCE
+    return source if os.path.isabs(source) else os.path.join(config.PATH, source)
+
+
 def process_styles():
     """Extracts and processes styles from the presentation."""
     slide_file = os.path.join(config.TEMP_DIRECTORY, FOLDER_FOR_EXTRACTED_APP, "ppt", "slides", "slide1.xml")
     if not os.path.exists(slide_file):
         log_writer.log_error("slide1.xml not found")
         return
+
+    thmx_path = resolve_thmx_path()
 
     namespaces = {
         'p': "http://schemas.openxmlformats.org/presentationml/2006/main",
@@ -65,16 +72,20 @@ def process_styles():
                 with open(task["output"], "w", encoding="utf-8") as f:
                     f.write(final_text)
 
-                if task["xml_tag"] == "custClrLst":
-                    insert_custom_colors.insert_custom_colors_into_thmx(THMX_PATH, final_text)
-                elif task["xml_tag"] == "extraClrSchemeLst":
-                    insert_color_palettes.insert_into_thmx(THMX_PATH, task["xml_tag"], final_text)
-                else:
-                    insert_fillstyle.insert_into_thmx(THMX_PATH, task["xml_tag"], final_text)
-
                 log_writer.log_info(f"Processed styles saved to {task['output']}")
             except IOError as e:
                 log_writer.log_error(f"Error writing {task['output']}: {e}")
+                continue
+
+            try:
+                if task["xml_tag"] == "custClrLst":
+                    insert_custom_colors.insert_custom_colors_into_thmx(thmx_path, final_text)
+                elif task["xml_tag"] == "extraClrSchemeLst":
+                    insert_color_palettes.insert_into_thmx(thmx_path, task["xml_tag"], final_text)
+                else:
+                    insert_fillstyle.insert_into_thmx(thmx_path, task["xml_tag"], final_text)
+            except (IOError, FileNotFoundError) as e:
+                log_writer.log_error(f"Error updating source theme ({thmx_path}) for {task['xml_tag']}: {e}")
 
 if __name__ == "__main__":
     process_styles()
