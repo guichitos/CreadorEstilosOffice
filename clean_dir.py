@@ -31,6 +31,5 @@ def clean_output_files():
             log_writer.log_info(f"⚠️ Auxiliary file not found (skip): {file_name}")
 
 
-
 if __name__ == "__main__":
     clean_output_files()
